@@ -3,4 +3,5 @@ export interface InputProps
   label?: string;
   handleChange: (value: string) => void;
   error?: string;
+  required?: boolean;
 }

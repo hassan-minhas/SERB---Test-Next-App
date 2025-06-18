@@ -1,55 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 import { Table, TableColumn } from "@/components/Table";
 import { Card } from "@/components/Card";
 import Button from "@/components/Button/Button";
 import { Employee } from "@/types";
+import { RootState } from "@/lib/store";
 import Image from "next/image";
 
 export default function EmployeesPage() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadEmployees = async () => {
-      setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setEmployees([]);
-      setLoading(false);
-    };
-
-    loadEmployees();
-  }, []);
+  const router = useRouter();
+  const { employees, loading } = useSelector(
+    (state: RootState) => state.employees
+  );
 
   const columns: TableColumn<Employee>[] = [
     {
-      key: "id",
-      header: "ID",
-    },
-    {
       key: "image",
       header: "Image",
-      render: (value, row) => <Image src={row.profilePic} alt={row.name} />,
+      render: (value, row) => (
+        <div className="w-10 h-10 rounded-full overflow-hidden">
+          <Image
+            src={row.profilePic}
+            alt={row.name}
+            width={40}
+            height={40}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ),
     },
     {
       key: "name",
       header: "Name",
       render: (value, row) => (
-        <div className="font-medium text-gray-900">{row.name}</div>
+        <div className="font-medium text-blue-600">{row.name}</div>
       ),
     },
     {
       key: "email",
       header: "Email",
-      render: (value) => (
-        <a
-          href={`mailto:${value}`}
-          className="text-blue-600 hover:text-blue-800"
-        >
-          {value}
-        </a>
-      ),
+      render: (value) => <p className="text-blue-600">{value}</p>,
     },
     {
       key: "phone",
@@ -62,7 +54,11 @@ export default function EmployeesPage() {
   ];
 
   const handleRowClick = (employee: Employee) => {
-    alert(`Clicked on ${employee.name} `);
+    router.push(`/employees/edit/${employee.id}`);
+  };
+
+  const handleAddEmployee = () => {
+    router.push("/employees/add");
   };
 
   return (
@@ -72,7 +68,9 @@ export default function EmployeesPage() {
           <div>
             <h1 className="text-3xl font-bold">Employees</h1>
           </div>
-          <Button className="w-auto">Add Employee</Button>
+          <Button className="w-auto" onClick={handleAddEmployee}>
+            Add Employee
+          </Button>
         </div>
         <Table
           data={employees}

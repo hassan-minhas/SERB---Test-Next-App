@@ -10,6 +10,7 @@ const Input = ({
   handleChange,
   className = "",
   type,
+  required,
   ...props
 }: InputProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +28,11 @@ const Input = ({
 
   return (
     <div className="w-full flex flex-col gap-1">
-      {label && <p className="text-sm font-medium">{label}</p>}
+      {label && (
+        <p className="text-sm font-medium">
+          {label} {required && <span className="text-red-500">{" *"}</span>}
+        </p>
+      )}
       <div className="relative">
         <input
           value={value}

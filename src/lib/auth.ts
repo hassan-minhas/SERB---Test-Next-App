@@ -72,7 +72,6 @@ export const auth = {
     return token;
   },
 
-  // Manual token refresh
   refreshToken: async () => {
     const { refreshToken } = getTokens();
 
@@ -106,5 +105,4 @@ export const auth = {
   },
 };
 
-// Export the configured axios instance for auth-related requests
 export default api;
