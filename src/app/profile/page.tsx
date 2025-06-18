@@ -1,42 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Card } from "@/components/Card";
 import { Loader } from "@/components/Loader";
-import { User } from "@/types";
-import api, { auth } from "@/lib/auth";
+import { useAuth } from "@/lib/useAuth";
 import Image from "next/image";
 import Button from "@/components/Button/Button";
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user, isLoading, error, getCurrentUser } = useAuth();
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const token = auth.getToken();
-        const response = await api.get("/auth/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (!user) {
+      getCurrentUser();
+    }
+  }, []);
 
-        setUser(response.data);
-      } catch {
-        setError("Failed to load profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, [router]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader />
@@ -51,7 +31,7 @@ export default function ProfilePage() {
           <div className="text-center p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">Error</h2>
             <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()}>Try Again</Button>
+            <Button onClick={getCurrentUser}>Try Again</Button>
           </div>
         </Card>
       </div>
@@ -84,14 +64,16 @@ export default function ProfilePage() {
           <div className=" mx-auto">
             <Image
               src={user.image || "/placeholder-avatar.png"}
-              alt={user.firstName}
+              alt={`${user.firstName} ${user.lastName}`}
               width={64}
               height={64}
             />
           </div>
           <div className="flex gap-2">
             <span className="font-medium">Name:</span>
-            <span className="text-gray-500">{user.firstName}</span>
+            <span className="text-gray-500">
+              {user.firstName} {user.lastName}
+            </span>
           </div>
 
           <div className="flex gap-2">

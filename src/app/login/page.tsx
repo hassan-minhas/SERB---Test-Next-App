@@ -3,37 +3,38 @@
 import Button from "@/components/Button/Button";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
-import { useState } from "react";
-import { auth } from "@/lib/auth";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/useAuth";
 import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { login, isLoading, error, isAuthenticated, clearError } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    if (error) {
+      clearError();
+    }
+  }, [username, password]);
 
   const handleLogin = async () => {
     if (!username || !password) return;
 
-    setIsLoading(true);
-    setError("");
+    const result = await login(username, password);
 
-    try {
-      const result = await auth.login({ username, password });
-
-      if (result.success) {
-        router.push("/");
-      } else {
-        setError(result.error || "Login failed. Please try again.");
-      }
-    } catch {
-      setError("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
+    if (result?.success) {
+      router.push("/");
     }
   };
+
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <Card className="w-full max-w-[550px]">

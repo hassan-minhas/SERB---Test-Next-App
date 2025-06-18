@@ -31,7 +31,7 @@ export default function EmployeesPage() {
       render: (value, row) => (
         <div className="w-10 h-10 rounded-full overflow-hidden">
           <Image
-            src={row.profilePic}
+            src={row.profilePic || "/placeholder-avatar.png"}
             alt={row.name}
             width={40}
             height={40}
