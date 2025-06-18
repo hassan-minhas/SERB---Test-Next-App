@@ -23,6 +23,13 @@ export default function EmployeeForm({
     profilePic: "",
   });
 
+  const [errors, setErrors] = useState<{
+    name?: string;
+    email?: string;
+    phone?: string;
+    position?: string;
+  }>({});
+
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -35,11 +42,57 @@ export default function EmployeeForm({
     }
   }, [initialData]);
 
+  const validateEmail = (email: string): string | undefined => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      return "Email is required";
+    }
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+    return undefined;
+  };
+
+  const validatePhone = (phone: string): string | undefined => {
+    const phoneRegex =
+      /^[\+]?[1-9][\d]{0,2}[\s\-]?[\(]?[\d]{1,3}[\)]?[\s\-]?[\d]{1,4}[\s\-]?[\d]{1,4}[\s\-]?[\d]{1,9}$/;
+    if (!phone) {
+      return "Phone number is required";
+    }
+    if (!phoneRegex.test(phone.replace(/\s/g, ""))) {
+      return "Please enter a valid phone number";
+    }
+    return undefined;
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
+
+    if (errors[field as keyof typeof errors]) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: undefined,
+      }));
+    }
+
+    if (field === "email" && value) {
+      const emailError = validateEmail(value);
+      setErrors((prev) => ({
+        ...prev,
+        email: emailError,
+      }));
+    }
+
+    if (field === "phone" && value) {
+      const phoneError = validatePhone(value);
+      setErrors((prev) => ({
+        ...prev,
+        phone: phoneError,
+      }));
+    }
   };
 
   const handleProfilePicChange = (
@@ -62,13 +115,29 @@ export default function EmployeeForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.phone ||
-      !formData.position
-    ) {
-      alert("Please fill in all required fields");
+    const newErrors: typeof errors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      newErrors.email = emailError;
+    }
+
+    const phoneError = validatePhone(formData.phone);
+    if (phoneError) {
+      newErrors.phone = phoneError;
+    }
+
+    if (!formData.position.trim()) {
+      newErrors.position = "Position is required";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
       return;
     }
 
@@ -87,7 +156,7 @@ export default function EmployeeForm({
         <p className="text-gray-600 mt-2">{subtitle}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="gap-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="gap-2">
           <div className="flex flex-col items-center gap-4">
             {formData.profilePic && (
@@ -123,6 +192,7 @@ export default function EmployeeForm({
           value={formData.name}
           handleChange={(value) => handleInputChange("name", value)}
           placeholder="Enter employee's full name"
+          error={errors.name}
           required
         />
 
@@ -132,6 +202,7 @@ export default function EmployeeForm({
           value={formData.email}
           handleChange={(value) => handleInputChange("email", value)}
           placeholder="Enter email address"
+          error={errors.email}
           required
         />
 
@@ -140,7 +211,8 @@ export default function EmployeeForm({
           type="tel"
           value={formData.phone}
           handleChange={(value) => handleInputChange("phone", value)}
-          placeholder="Enter phone number"
+          placeholder="Enter phone number (e.g., +1 234 567 8900)"
+          error={errors.phone}
           required
         />
 
@@ -150,6 +222,7 @@ export default function EmployeeForm({
           value={formData.position}
           handleChange={(value) => handleInputChange("position", value)}
           placeholder="Enter job position"
+          error={errors.position}
           required
         />
 

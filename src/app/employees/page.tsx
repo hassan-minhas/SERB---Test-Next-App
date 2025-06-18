@@ -1,16 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { Table, TableColumn } from "@/components/Table";
 import { Card } from "@/components/Card";
+import { ConfirmationModal } from "@/components/Modal";
 import Button from "@/components/Button/Button";
 import { Employee } from "@/types";
 import { RootState } from "@/lib/store";
+import { useAppDispatch } from "@/lib/hooks";
+import { deleteEmployee } from "@/lib/slices/employeeSlice";
 import Image from "next/image";
 
 export default function EmployeesPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(
+    null
+  );
   const { employees, loading } = useSelector(
     (state: RootState) => state.employees
   );
@@ -51,10 +60,59 @@ export default function EmployeesPage() {
       key: "position",
       header: "Position",
     },
+    {
+      key: "actions",
+      header: "Actions",
+      render: (value, row) => (
+        <div className="flex gap-2">
+          <Button
+            variant="outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEditEmployee(row);
+            }}
+            className="w-auto px-3 py-1 text-xs"
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteClick(row);
+            }}
+            className="w-auto px-3 py-1 text-xs text-red-600 border-red-600 hover:bg-red-50"
+          >
+            Delete
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   const handleRowClick = (employee: Employee) => {
     router.push(`/employees/edit/${employee.id}`);
+  };
+
+  const handleEditEmployee = (employee: Employee) => {
+    router.push(`/employees/edit/${employee.id}`);
+  };
+
+  const handleDeleteClick = (employee: Employee) => {
+    setEmployeeToDelete(employee);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (employeeToDelete) {
+      dispatch(deleteEmployee(employeeToDelete.id));
+      setEmployeeToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setEmployeeToDelete(null);
   };
 
   const handleAddEmployee = () => {
@@ -81,6 +139,14 @@ export default function EmployeesPage() {
           className="border-0 rounded-none"
         />
       </Card>
+
+      <ConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Employee?"
+        message={`Are you sure you want to delete ${employeeToDelete?.name}? This action cannot be undone.`}
+      />
     </div>
   );
 }
