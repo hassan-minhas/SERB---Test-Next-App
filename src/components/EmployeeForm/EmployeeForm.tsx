@@ -157,7 +157,7 @@ export default function EmployeeForm({
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <div className="gap-2">
+        <div className="flex gap-2">
           <div className="flex flex-col items-center gap-4">
             {formData.profilePic && (
               <div className="w-20 h-20 rounded-full border-2 border-gray-100 overflow-hidden flex items-center justify-center">

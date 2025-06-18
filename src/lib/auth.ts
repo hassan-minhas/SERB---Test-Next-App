@@ -40,9 +40,9 @@ export const auth = {
   login: async (credentials: { username: string; password: string }) => {
     try {
       const response = await api.post("/auth/login", credentials);
-      const { token, refreshToken } = response.data;
+      const { accessToken, refreshToken } = response.data;
 
-      setTokens(token, refreshToken);
+      setTokens(accessToken, refreshToken);
 
       return { success: true, data: response.data };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,7 +86,8 @@ export const auth = {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      const { token: newToken, refreshToken: newRefreshToken } = response.data;
+      const { accessToken: newToken, refreshToken: newRefreshToken } =
+        response.data;
       setTokens(newToken, newRefreshToken);
 
       return { success: true, token: newToken };

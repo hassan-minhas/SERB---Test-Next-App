@@ -12,8 +12,7 @@ const TableHeader = ({ columns }: TableHeaderProps) => {
           <th
             key={column.key}
             className={twMerge(
-              "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase",
-              column.width && `w-${column.width}`
+              "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
             )}
           >
             <div className="flex items-center">{column.header}</div>

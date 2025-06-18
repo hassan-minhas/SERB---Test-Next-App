@@ -6,6 +6,7 @@ import { twMerge } from "tailwind-merge";
 import { NavbarProps, NavItemProps } from "./types";
 import { useAuth } from "@/lib/useAuth";
 import { useEffect } from "react";
+import Button from "../Button/Button";
 
 const NavItem = ({ href, children, isActive }: NavItemProps) => {
   const baseClasses =
@@ -68,12 +69,13 @@ const Navbar = ({ className = "" }: NavbarProps) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <button
+          <Button
             onClick={logout}
-            className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-200"
+            variant="outlined"
+            className="px-4 py-2  border-red-600 text-red-600 hover:text-red-700 hover:bg-red-50 "
           >
             Logout
-          </button>
+          </Button>
         </div>
       </div>
     </nav>

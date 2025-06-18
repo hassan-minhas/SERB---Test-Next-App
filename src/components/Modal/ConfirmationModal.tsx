@@ -18,10 +18,10 @@ const ConfirmationModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} className="max-w-sm">
-      <div className="gap-4">
+      <div className="flex gap-6">
         <p className="text-gray-600">{message}</p>
 
-        <div className="flex mt-6 gap-3 justify-end">
+        <div className="flex gap-3 justify-end">
           <Button
             variant="outlined"
             onClick={onClose}

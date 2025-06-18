@@ -4,7 +4,6 @@ export interface TableColumn<T = any> {
   header: string;
   render?: (value: any, row: T) => React.ReactNode;
   sortable?: boolean;
-  width?: string;
 }
 
 export interface TableProps<T = any> {

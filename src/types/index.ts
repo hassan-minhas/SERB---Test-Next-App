@@ -9,3 +9,12 @@ export interface EmployeeFormData {
 export interface Employee extends EmployeeFormData {
   id: number;
 }
+
+export interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  role?: string;
+  image?: string;
+}
