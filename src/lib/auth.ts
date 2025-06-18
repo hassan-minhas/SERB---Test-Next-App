@@ -132,12 +132,12 @@ export const authService = {
         success: true,
         token: accessToken,
       };
-    } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       tokenManager.clearTokens();
 
-      const axiosError = error as AxiosError<{ message?: string }>;
       const errorMessage =
-        axiosError?.response?.data?.message || "Token refresh failed";
+        error?.response?.data?.message || "Token refresh failed";
       return {
         success: false,
         error: errorMessage,
